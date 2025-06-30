@@ -2,7 +2,8 @@ const Brand = require("../models/brandModel");
 const Perfume = require("../models/perfumeModel");
 exports.getAllBrands = async (req, res) => {
   try {
-    const brands = await Brand.find().populate("perfumes");
+    const brands = await Brand.find().select("brandName");
+    // .populate("perfumes");
     res.status(200).json(brands);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -11,7 +12,8 @@ exports.getAllBrands = async (req, res) => {
 
 exports.getBrandById = async (req, res) => {
   try {
-    const brand = await Brand.findById(req.params.brandId).populate("perfumes");
+    const brand = await Brand.findById(req.params.brandId).select("brandName");
+    // .populate("perfumes");
     if (!brand) {
       return res.status(404).json({ message: "Brand not found" });
     }
@@ -27,9 +29,15 @@ exports.addBrand = async (req, res) => {
     if (!brandName) {
       return res.status(400).json({ message: "Brand name is required" });
     }
+
+    // Check if the brand already exists
+    const existingBrand = await Brand.findOne({ brandName });
+    if (existingBrand) {
+      return res.status(400).json({ message: "Brand already exists" });
+    }
     const newBrand = new Brand({ brandName });
     await newBrand.save();
-    res.status(201).json(newBrand);
+    res.status(201).json({ message: "Brand added successfully", newBrand });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

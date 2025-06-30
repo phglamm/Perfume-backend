@@ -5,7 +5,11 @@ exports.getAllPerfumes = async (req, res) => {
     const searchQuery = req.query.search || "";
     const allPerfumes = await Perfume.find({
       perfumeName: { $regex: searchQuery, $options: "i" },
-    }).populate("brand");
+    })
+      .populate("brand", "brandName")
+      .select(
+        "perfumeName uri price concentration ingredients description volume targetAudience brand"
+      );
 
     // const perfumes = await Perfume.find().populate("brand");
     res.status(200).json(allPerfumes);
@@ -17,8 +21,10 @@ exports.getAllPerfumes = async (req, res) => {
 exports.getPerfumeById = async (req, res) => {
   try {
     const perfume = await Perfume.findById(req.params.perfumeId)
-      .populate("brand")
-      .populate("comments.author");
+      .populate("brand", "brandName")
+      .select(
+        "perfumeName uri price concentration ingredients description volume targetAudience brand"
+      );
 
     if (!perfume) {
       return res.status(404).json({ message: "Perfume not found" });
