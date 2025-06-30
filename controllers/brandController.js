@@ -24,6 +24,9 @@ exports.getBrandById = async (req, res) => {
 exports.addBrand = async (req, res) => {
   try {
     const { brandName } = req.body;
+    if (!brandName) {
+      return res.status(400).json({ message: "Brand name is required" });
+    }
     const newBrand = new Brand({ brandName });
     await newBrand.save();
     res.status(201).json(newBrand);

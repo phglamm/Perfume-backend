@@ -21,10 +21,6 @@ perfumeRouter
     authenticateUser,
     authorizeAdmin,
     perfumeController.updatePerfumeById
-  )
-  .post(
-    "/:perfumeId/comment",
-    authenticateUser,
-    perfumeController.postCommentRatingOnPerfume
   );
+
 module.exports = perfumeRouter;
