@@ -4,7 +4,25 @@ const bcrypt = require("bcrypt");
 
 exports.register = async (req, res) => {
   try {
-  } catch (error) {}
+    const { email, password, memberName, yob, gender } = req.body;
+    // Check if user already exists
+    const existingUser = await Member.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+    // Create new user
+    const newUser = new Member({
+      email,
+      password,
+      memberName,
+      yob,
+      gender,
+    });
+    await newUser.save();
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 exports.login = async (req, res) => {
