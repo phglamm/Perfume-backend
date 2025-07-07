@@ -22,6 +22,7 @@ exports.getPerfumeById = async (req, res) => {
   try {
     const perfume = await Perfume.findById(req.params.perfumeId)
       .populate("brand", "brandName")
+      .populate("Comments", "rating content author")
       .select(
         "perfumeName uri price concentration ingredients description volume targetAudience brand"
       );
