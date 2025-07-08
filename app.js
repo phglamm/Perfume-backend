@@ -10,7 +10,7 @@ const connectDB = require("./config/database");
 const perfumeRouter = require("./routes/perfumeRouter");
 const brandRouter = require("./routes/brandRouter");
 const authRouter = require("./routes/authRouter");
-const memberRouter = require("./routes/memberRouter");
+const userRouter = require("./routes/userRouter");
 const paymentRouter = require("./routes/paymentRouter");
 var app = express();
 connectDB();
@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/brand", brandRouter);
 app.use("/api/perfume", perfumeRouter);
-app.use("/api/member", memberRouter);
+app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/payment", paymentRouter);
 

@@ -52,6 +52,7 @@ exports.addPerfume = async (req, res) => {
   try {
     const {
       perfumeName,
+      cost,
       uri,
       price,
       concentration,
@@ -67,6 +68,7 @@ exports.addPerfume = async (req, res) => {
     }
     const newPerfume = new Perfume({
       perfumeName,
+      cost,
       uri,
       price,
       concentration,
@@ -92,6 +94,7 @@ exports.updatePerfumeById = async (req, res) => {
     const {
       perfumeName,
       uri,
+      cost,
       price,
       concentration,
       ingredients,
@@ -122,6 +125,7 @@ exports.updatePerfumeById = async (req, res) => {
 
     perfume.perfumeName = perfumeName;
     perfume.uri = uri;
+    perfume.cost = cost;
     perfume.price = price;
     perfume.concentration = concentration;
     perfume.ingredients = ingredients;

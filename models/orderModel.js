@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const OrderSchema = new mongoose.Schema(
   {
+    orderCode: {
+      type: Number,
+      unique: true,
+      sparse: true, // Allows null values and ensures uniqueness for non-null values
+    },
     paymentMethod: {
       type: String,
       required: true,

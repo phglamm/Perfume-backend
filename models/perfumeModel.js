@@ -10,6 +10,10 @@ const perfumeSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    cost: {
+      type: Number,
+      required: true,
+    },
     price: {
       type: Number,
       required: true,
