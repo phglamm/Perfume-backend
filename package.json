@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@payos/node": "^1.0.10",
+    "axios": "^1.10.0",
     "backend": "file:",
     "bcrypt": "^6.0.0",
     "cookie-parser": "~1.4.4",

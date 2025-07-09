@@ -12,6 +12,7 @@ const brandRouter = require("./routes/brandRouter");
 const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userRouter");
 const paymentRouter = require("./routes/paymentRouter");
+const chatRouter = require("./routes/chatRouter");
 var app = express();
 connectDB();
 
@@ -31,6 +32,7 @@ app.use("/api/perfume", perfumeRouter);
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/payment", paymentRouter);
+app.use("/api/chat", chatRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
