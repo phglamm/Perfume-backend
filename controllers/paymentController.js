@@ -14,7 +14,7 @@ exports.createPaymentUrl = async (req, res) => {
 
   try {
     const { orderItems, address, phone } = req.body;
-    const memberId = req.user._id; // From authenticated middleware
+    const userId = req.user._id; // From authenticated middleware
 
     // Validate order items
     if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
@@ -78,7 +78,7 @@ exports.createPaymentUrl = async (req, res) => {
       subTotal,
       totalPrice,
       profit: totalProfit,
-      member: memberId,
+      user: userId,
       address,
       phone,
       orderItems: [], // Will be populated after creating order items
@@ -184,7 +184,7 @@ exports.getPaymentStatus = async (req, res) => {
 
     const order = await Order.findById(orderId)
       .populate("orderItems")
-      .populate("member", "name email");
+      .populate("user", "username email");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });

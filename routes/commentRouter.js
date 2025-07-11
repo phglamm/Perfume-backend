@@ -1,21 +1,18 @@
 const express = require("express");
 const commentRouter = express.Router();
 const commentController = require("../controllers/commentController");
-const {
-  authenticateUser,
-  authorizeAdmin,
-} = require("../middleware/authenticatedMiddleware");
+const { authenticateUser } = require("../middleware/authenticatedMiddleware");
 
 commentRouter.post(
-  "/:memberId/update",
+  "/:perfumeId",
   authenticateUser,
   commentController.postCommentRatingOnPerfume
 );
 
 commentRouter.delete(
-  "/collectors",
+  "/:commentId",
   authenticateUser,
   commentController.deleteCommentById
 );
 
-module.exports = memberRouter;
+module.exports = commentRouter;

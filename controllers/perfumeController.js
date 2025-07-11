@@ -7,11 +7,18 @@ exports.getAllPerfumes = async (req, res) => {
       perfumeName: { $regex: searchQuery, $options: "i" },
     })
       .populate("brand", "brandName")
+      .populate({
+        path: "comments",
+        select: "rating content author createdAt",
+        populate: {
+          path: "author",
+          select: "username email",
+        },
+      })
       .select(
-        "perfumeName uri price concentration ingredients description volume targetAudience brand"
+        "perfumeName uri price concentration ingredients description volume targetAudience brand comments"
       );
 
-    // const perfumes = await Perfume.find().populate("brand");
     res.status(200).json(allPerfumes);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -22,9 +29,16 @@ exports.getPerfumeById = async (req, res) => {
   try {
     const perfume = await Perfume.findById(req.params.perfumeId)
       .populate("brand", "brandName")
-      .populate("Comments", "rating content author")
+      .populate({
+        path: "comments",
+        select: "rating content author createdAt",
+        populate: {
+          path: "author",
+          select: "username email",
+        },
+      })
       .select(
-        "perfumeName uri price concentration ingredients description volume targetAudience brand"
+        "perfumeName uri price concentration ingredients description volume targetAudience brand comments"
       );
 
     if (!perfume) {
