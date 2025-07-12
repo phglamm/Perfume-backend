@@ -14,7 +14,7 @@ const sendMessage = async (req, res) => {
     // Prepare the conversation history for the API
     const messages = [
       {
-        role: "assistant",
+        role: "system", // Changed from "assistant" to "system" for better model compatibility
         content:
           "You are a helpful assistant for a perfume e-commerce website. You can help customers with perfume recommendations, product information, fragrance notes, and general shopping assistance. Be friendly, knowledgeable, and helpful.",
       },
@@ -25,27 +25,49 @@ const sendMessage = async (req, res) => {
       },
     ];
 
-    // Make request to OpenRouter AI
-    const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        model: "tngtech/deepseek-r1t2-chimera:free", // Using a free model, you can change this
-        messages: messages,
-        max_tokens: 500,
-        temperature: 0.7,
-        stream: false,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.CHATBOT_KEY}`,
-          "HTTP-Referer": "http://localhost:5000", // Your site URL
-          "X-Title": "Perfume E-commerce Chatbot", // Your site title
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    // Try multiple models in case one is unavailable
+    const models = [
+      "deepseek/deepseek-chat-v3-0324:free",
+      "tngtech/deepseek-r1t2-chimera:free",
+      "tencent/hunyuan-a13b-instruct:free",
+    ];
 
-    const aiResponse = response.data.choices[0].message.content;
+    let aiResponse = null;
+    let lastError = null;
+
+    for (const model of models) {
+      try {
+        const response = await axios.post(
+          "https://openrouter.ai/api/v1/chat/completions",
+          {
+            model: model,
+            messages: messages,
+            max_tokens: 500,
+            temperature: 0.7,
+            stream: false,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.CHATBOT_KEY}`,
+              "HTTP-Referer": "http://localhost:5000",
+              "X-Title": "Perfume E-commerce Chatbot",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        aiResponse = response.data.choices[0].message.content;
+        break; // Success, exit the loop
+      } catch (modelError) {
+        lastError = modelError;
+        console.log(`Model ${model} failed, trying next...`);
+        continue;
+      }
+    }
+
+    if (!aiResponse) {
+      throw lastError;
+    }
 
     res.json({
       success: true,

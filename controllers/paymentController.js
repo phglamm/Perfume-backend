@@ -10,10 +10,11 @@ const payOs = new PayOS(
 );
 
 exports.createPaymentUrl = async (req, res) => {
-  const YOUR_DOMAIN = `http://localhost:3030`;
+  const YOUR_DOMAIN = `perfumeshop:/`;
 
   try {
-    const { orderItems, address, phone } = req.body;
+    const { orderItems, address, phone, customerName, email, paymentMethod } =
+      req.body;
     const userId = req.user._id; // From authenticated middleware
 
     // Validate order items
@@ -21,10 +22,11 @@ exports.createPaymentUrl = async (req, res) => {
       return res.status(400).json({ message: "Order items are required" });
     }
 
-    if (!address || !phone) {
-      return res
-        .status(400)
-        .json({ message: "Address and phone are required" });
+    if (!address || !phone || !customerName || !email || !paymentMethod) {
+      return res.status(400).json({
+        message:
+          "Address, phone, customerName, email, paymentMethod are required",
+      });
     }
 
     // Calculate totals and prepare items for PayOS
@@ -74,11 +76,13 @@ exports.createPaymentUrl = async (req, res) => {
     // Create order in database
     const newOrder = new Order({
       orderCode,
-      paymentMethod: "PAYOS",
+      paymentMethod: paymentMethod === "COD" ? "COD" : "PAYOS",
       subTotal,
       totalPrice,
       profit: totalProfit,
       user: userId,
+      customerName,
+      email,
       address,
       phone,
       orderItems: [], // Will be populated after creating order items
@@ -103,25 +107,36 @@ exports.createPaymentUrl = async (req, res) => {
     savedOrder.orderItems = createdOrderItems;
     await savedOrder.save();
 
+    if (paymentMethod === "COD") {
+      return res.status(200).json({
+        success: true,
+        orderId: savedOrder._id,
+        orderCode,
+        totalAmount: totalPrice,
+        message:
+          "Order created successfully, payment will be collected on delivery.",
+      });
+    } else if (paymentMethod === "PAYOS") {
+      const payOSBody = {
+        orderCode,
+        amount: totalPrice,
+        description: `${savedOrder._id}`,
+        items: payOSItems,
+        returnUrl: `${YOUR_DOMAIN}/order/success`,
+        cancelUrl: `${YOUR_DOMAIN}/order/failed`,
+      };
+
+      const paymentLinkResponse = await payOs.createPaymentLink(payOSBody);
+
+      res.status(200).json({
+        success: true,
+        orderId: savedOrder._id,
+        paymentUrl: paymentLinkResponse.checkoutUrl,
+        orderCode,
+        totalAmount: totalPrice,
+      });
+    }
     // Create PayOS payment body
-    const payOSBody = {
-      orderCode,
-      amount: totalPrice,
-      description: `${savedOrder._id}`,
-      items: payOSItems,
-      returnUrl: `${YOUR_DOMAIN}/payment-success?orderId=${savedOrder._id}`,
-      cancelUrl: `${YOUR_DOMAIN}/payment-cancel?orderId=${savedOrder._id}`,
-    };
-
-    const paymentLinkResponse = await payOs.createPaymentLink(payOSBody);
-
-    res.status(200).json({
-      success: true,
-      orderId: savedOrder._id,
-      paymentUrl: paymentLinkResponse.checkoutUrl,
-      orderCode,
-      totalAmount: totalPrice,
-    });
   } catch (error) {
     console.error("Payment creation error:", error);
     res.status(500).json({

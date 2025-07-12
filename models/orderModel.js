@@ -23,12 +23,7 @@ const OrderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
-      required: true,
-    },
-    address: {
+    customerName: {
       type: String,
       required: true,
     },
@@ -36,6 +31,20 @@ const OrderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    address: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+      required: true,
+    },
+
     orderItems: [
       {
         type: mongoose.Schema.Types.ObjectId,
