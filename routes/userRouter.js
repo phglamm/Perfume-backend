@@ -7,7 +7,7 @@ const {
 } = require("../middleware/authenticatedMiddleware");
 
 userRouter.put(
-  "/:userId/update",
+  "/profile",
   authenticateUser,
   userController.updateMemberProfile
 );
@@ -17,5 +17,7 @@ userRouter.put(
   authenticateUser,
   userController.changePassword
 );
+
+userRouter.get("/profile", authenticateUser, userController.getMemberProfile);
 
 module.exports = userRouter;
