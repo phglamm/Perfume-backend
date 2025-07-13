@@ -3,7 +3,7 @@ const OrderItemSchema = new mongoose.Schema(
   {
     perfume: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Perfume",
+      ref: "Perfumes",
       required: true,
     },
     quantity: {
