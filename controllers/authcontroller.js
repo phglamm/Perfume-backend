@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, fullName, yob, gender, username } = req.body;
+    const { email, password, fullName, yob, gender, username, phone } = req.body;
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -18,6 +18,8 @@ exports.register = async (req, res) => {
       fullName,
       yob,
       gender,
+      phone,
+      
     });
     await newUser.save();
     res.status(201).json({ message: "User registered successfully" });
@@ -44,6 +46,7 @@ exports.login = async (req, res) => {
       yob: user.yob,
       gender: user.gender,
       isAdmin: user.isAdmin,
+      phone: user.phone,
     };
 
     // Generate JWT token
